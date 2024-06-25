@@ -1,0 +1,108 @@
+import math
+import glob
+import os
+
+def load_data(directory):
+    x = []
+    y = []
+    for f in glob.glob(os.path.join(directory,"HAM.*.txt")):
+        with open( f, 'r')as file:
+            x.append(file.read())
+            y.append(0)
+    for f in glob.glob(os.path.join(directory,"SPAM.*.txt")):
+        with open( f, 'r')as file:
+            x.append(file.read())
+            y.append(1)
+    return x,y
+
+
+def nb_train(x, y):
+    model = {
+        'ham_count': 0,
+        'spam_count': 0,
+        'ham_fd': {},
+        'spam_fd': {}
+    }
+
+    for i in range(len(x)):
+        if y[i] == 0:  # HAM email
+            model['ham_count'] += 1
+            for word in x[i].split():
+                model['ham_fd'][word] = model['ham_fd'].get(word, 0) + 1
+        else:  # SPAM email
+            model['spam_count'] += 1
+            for word in x[i].split():
+                model['spam_fd'][word] = model['spam_fd'].get(word, 0) + 1
+
+    return model
+
+
+def nb_test(docs, model, use_log=False, smoothing=False):
+    predictions = []
+    for doc in docs:
+        if use_log:
+            ham_prob = math.log(model['ham_count'])
+            spam_prob = math.log(model['spam_count'])
+        else:
+            ham_prob = model['ham_count'] / (model['ham_count'] + model['spam_count'])
+            spam_prob = model['spam_count'] / (model['ham_count'] + model['spam_count'])
+
+        words = doc.split()
+
+        for word in words:
+            ham_word_prob = model['ham_fd'].get(word, 0)
+            spam_word_prob = model['spam_fd'].get(word, 0)
+
+            # apply add-one smoothing if required
+            if smoothing:
+                ham_word_prob += 1
+                spam_word_prob += 1
+
+            # Avoid taking the logarithm of non-positive values
+            if use_log:
+                if ham_word_prob > 0:
+                    ham_prob += math.log(ham_word_prob / (sum(model['ham_fd'].values()) + smoothing * len(model['ham_fd']) + 1e-10))
+                if spam_word_prob > 0:
+                    spam_prob += math.log(spam_word_prob / (sum(model['spam_fd'].values()) + smoothing * len(model['spam_fd']) + 1e-10))
+            else:
+                ham_prob *= ham_word_prob / (sum(model['ham_fd'].values()) + smoothing * len(model['ham_fd']) + 1e-10)
+                spam_prob *= spam_word_prob / (sum(model['spam_fd'].values()) + smoothing * len(model['spam_fd']) + 1e-10)
+
+        predictions.append(1 if spam_prob > ham_prob else 0)
+    return predictions
+
+
+def f_score(y_true, y_pred):
+    TP = FP = FN = 0
+    for i in range(len(y_true)):
+        if y_pred[i] == y_true[i] == 1:
+            TP += 1
+        elif y_pred[i] == 1 and y_true[i] == 0:
+            FP += 1
+        elif y_pred[i] == 0 and y_true[i] == 1:
+            FN += 1
+    precision = TP / (TP + FP + 1e-10) # Adding a small constant to avoid division by zero
+    recall = TP / (TP + FN + 1e-10) # Adding a small constant to avoid division by zero
+    f_score = (2 * precision * recall) / (precision + recall + 1e-10) # Adding a small constant to avoid division by zero
+
+    return f_score
+
+
+x_train, y_train = load_data(r"\Users\rashe\Desktop\project2\SPAM_training_set")    # get data to train
+model = nb_train(x_train, y_train)    # training model
+x_test, y_test = load_data(r"\Users\rashe\Desktop\project2\SPAM_test_set")    # get data to test
+y_pred = nb_test(x_test, model, use_log = False, smoothing = False)    # getting the classification set
+# print(f_score(y_test,y_pred))    # print and calculate f-score
+
+# Perform predictions with different configurations
+configs = [
+    {'use_log': True, 'smoothing': True},
+    {'use_log': True, 'smoothing': False},
+    {'use_log': False, 'smoothing': True},
+    {'use_log': False, 'smoothing': False}
+]
+
+for config in configs:
+    y_pred = nb_test(x_test, model, use_log=config['use_log'], smoothing=config['smoothing'])
+    f1_score = f_score(y_test, y_pred)
+    print(f"F1-score with log calculation={config['use_log']}, smoothing={config['smoothing']}: {f1_score}")
