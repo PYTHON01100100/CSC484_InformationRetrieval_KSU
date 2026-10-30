@@ -16,12 +16,14 @@ Repository: <https://github.com/PYTHON01100100/CSC484_InformationRetrieval_KSU>
 
 > ⚠️ The links below should be reviewed by the contributors and the author before being treated as references.
 
-**Screen recordings**
+**Screen recordings** (waiting for YouTube links)
 
-- <https://www.awesomescreenshot.com/video/25699502?key=0c3618119bed59d5c7eb10ee77b4ee72>
-- <https://www.awesomescreenshot.com/video/25772236?key=968f9406e1ada627659208c9073ef7cc>
-- <https://www.awesomescreenshot.com/video/25772126?key=360896e92a520ab62911c75d2b1a53dc>
-- <https://www.awesomescreenshot.com/video/25912182?key=e67837ceb62cf0e336fda105f7b95d8e>
+| Title | Link | Status |
+|-------|------|--------|
+| IR Using LMs | <https://www.awesomescreenshot.com/video/25699502?key=0c3618119bed59d5c7eb10ee77b4ee72> | Waiting for YouTube link |
+| Advanced Modeling | <https://www.awesomescreenshot.com/video/25772236?key=968f9406e1ada627659208c9073ef7cc> | Waiting for YouTube link |
+| CSC484 – Class Collaborate | <https://www.awesomescreenshot.com/video/25772126?key=360896e92a520ab62911c75d2b1a53dc> | Waiting for YouTube link |
+| Paradigm | <https://www.awesomescreenshot.com/video/25912182?key=e67837ceb62cf0e336fda105f7b95d8e> | Waiting for YouTube link |
 
 **YouTube**
 
